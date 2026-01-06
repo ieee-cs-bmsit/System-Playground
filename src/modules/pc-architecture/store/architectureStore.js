@@ -1,5 +1,7 @@
 import { create } from 'zustand';
 import { CPU, MemoryModule, Instruction } from '../simulation/ArchitectureEngine';
+import { CacheHierarchy } from '../simulation/CacheEngine';
+import { CPUPipeline } from '../simulation/PipelineEngine';
 
 const useArchitectureStore = create((set, get) => ({
     // Time

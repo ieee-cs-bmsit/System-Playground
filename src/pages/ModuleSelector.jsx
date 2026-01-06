@@ -3,10 +3,10 @@ import { Cpu, HardDrive, Wifi, CircuitBoard, Battery, Monitor } from 'lucide-rea
 
 const modules = [
     { id: 'os-scheduler', name: 'OS Scheduler', icon: Cpu, desc: 'Visualize CPU Scheduling Algorithms (RR, FCFS)', active: true, color: 'bg-comic-blue' },
+    { id: 'pc-architecture', name: 'PC Architecture', icon: Monitor, desc: 'Build Computer Systems from Scratch', active: true, color: 'bg-purple-500' },
+    { id: 'ram', name: 'RAM Simulator', icon: CircuitBoard, desc: 'Paging, Virtual Memory & TLB', active: true, color: 'bg-green-500' },
     { id: 'caching', name: 'Caching System', icon: HardDrive, desc: 'L1/L2 Cache Hits & Misses', active: false, color: 'bg-comic-yellow' },
-    { id: 'ram', name: 'RAM Simulator', icon: CircuitBoard, desc: 'Paging, Segmentation & Virtual Memory', active: false, color: 'bg-comic-pink' },
-    { id: 'iot', name: 'IoT Network', icon: Wifi, desc: 'Sensor Networks & Protocols', active: false, color: 'bg-green-400' },
-    { id: 'pc-builder', name: 'PC Architecture', icon: Monitor, desc: 'Assemble a Computer from Scratch', active: false, color: 'bg-purple-400' },
+    { id: 'iot', name: 'IoT Network', icon: Wifi, desc: 'Sensor Networks & Protocols', active: false, color: 'bg-comic-pink' },
 ];
 
 export default function ModuleSelector({ onSelect }) {
