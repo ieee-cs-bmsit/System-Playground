@@ -17,27 +17,6 @@ pub struct CPU {
     cycle_count: u64,
 }
 
-/// Execution result returned to JavaScript
-#[wasm_bindgen]
-#[derive(Serialize, Deserialize, Clone)]
-pub struct ExecutionResult {
-    pub pc: u64,
-    pub cycles: u32,
-    pub halted: bool,
-}
-
-#[wasm_bindgen]
-impl ExecutionResult {
-    #[wasm_bindgen(getter)]
-    pub fn pc(&self) -> u64 { self.pc }
-    
-    #[wasm_bindgen(getter)]
-    pub fn cycles(&self) -> u32 { self.cycles }
-    
-    #[wasm_bindgen(getter)]
-    pub fn halted(&self) -> bool { self.halted }
-}
-
 #[wasm_bindgen]
 impl CPU {
     /// Create a new CPU instance
