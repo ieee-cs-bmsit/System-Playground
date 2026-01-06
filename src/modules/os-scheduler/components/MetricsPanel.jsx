@@ -7,7 +7,7 @@ export default function MetricsPanel() {
     const [isOpen, setIsOpen] = React.useState(false);
 
     return (
-        <div className="absolute top-32 right-6 z-40">
+        <div className="absolute top-32 right-4 z-40">
             {/* Toggle Button */}
             {!isOpen && (
                 <button

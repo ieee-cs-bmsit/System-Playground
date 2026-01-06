@@ -9,8 +9,15 @@ import ReactFlow, {
     ReactFlowProvider
 } from 'reactflow';
 import 'reactflow/dist/style.css';
-import { PhysicalRAMNode, VirtualMemoryNode, PageTableNode, TLBNode } from '../nodes/MemoryNodes';
-import useRAMStore from '../store/ramStore';
+import {
+    TemperatureSensorNode,
+    HumiditySensorNode,
+    MotionSensorNode,
+    LightSensorNode,
+    GatewayNode,
+    CloudServerNode
+} from '../nodes/IoTNodes';
+import useIoTStore from '../store/iotStore';
 
 const initialNodes = [];
 const initialEdges = [];
@@ -18,20 +25,24 @@ const initialEdges = [];
 function CanvasInner() {
     const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
     const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
-    const initializeMemory = useRAMStore(state => state.initializeMemory);
+    const addSensor = useIoTStore(state => state.addSensor);
+    const addGateway = useIoTStore(state => state.addGateway);
+    const initializeCloud = useIoTStore(state => state.initializeCloud);
 
     const nodeTypes = useMemo(() => ({
-        physicalram: PhysicalRAMNode,
-        virtualmemory: VirtualMemoryNode,
-        pagetable: PageTableNode,
-        tlb: TLBNode
+        temperature: TemperatureSensorNode,
+        humidity: HumiditySensorNode,
+        motion: MotionSensorNode,
+        light: LightSensorNode,
+        gateway: GatewayNode,
+        cloud: CloudServerNode
     }), []);
 
     const onConnect = useCallback((params) => setEdges((eds) => addEdge({
         ...params,
         animated: true,
-        style: { stroke: '#000', strokeWidth: 3 },
-        type: 'default'
+        style: { stroke: '#22c55e', strokeWidth: 3 },
+        type: 'smoothstep'
     }, eds)), [setEdges]);
 
     const onDragOver = useCallback((event) => {
@@ -49,7 +60,7 @@ function CanvasInner() {
 
         const reactFlowBounds = event.target.getBoundingClientRect();
         const position = {
-            x: event.clientX - reactFlowBounds.left - 75,
+            x: event.clientX - reactFlowBounds.left - 65,
             y: event.clientY - reactFlowBounds.top - 40,
         };
 
@@ -57,21 +68,25 @@ function CanvasInner() {
             id: `${type}_${Date.now()}`,
             type,
             position,
-            data: { label, size: 16, pageSize: 4, entries: 64, assoc: 4 }
+            data: { label, battery: 100, state: 'ACTIVE' }
         };
 
 
         // BUG FIX: Use spread operator instead of concat
         setNodes((nds) => [...nds, newNode]);
 
-        // Initialize memory on first PhysicalRAM drop
-        if (type === 'physicalram' && !useRAMStore.getState().physicalRAM) {
-            initializeMemory();
+        // Add to simulation
+        if (type === 'temperature' || type === 'humidity' || type === 'motion' || type === 'light') {
+            addSensor(type, position);
+        } else if (type === 'gateway') {
+            addGateway('MQTT', position);
+        } else if (type === 'cloud') {
+            initializeCloud();
         }
-    }, [setNodes, initializeMemory]);
+    }, [setNodes, addSensor, addGateway, initializeCloud]);
 
     return (
-        <div className="w-full h-full bg-gradient-to-br from-blue-50 to-green-50">
+        <div className="w-full h-full bg-gradient-to-br from-green-50 to-blue-50">
             <ReactFlow
                 nodes={nodes}
                 edges={edges}
@@ -87,13 +102,15 @@ function CanvasInner() {
                 <Controls />
                 <MiniMap
                     nodeColor={(node) => {
-                        switch (node.type) {
-                            case 'physicalram': return '#3b82f6';
-                            case 'virtualmemory': return '#a855f7';
-                            case 'pagetable': return '#22c55e';
-                            case 'tlb': return '#eab308';
-                            default: return '#999';
-                        }
+                        const colors = {
+                            temperature: '#f87171',
+                            humidity: '#60a5fa',
+                            motion: '#a78bfa',
+                            light: '#fbbf24',
+                            gateway: '#22c55e',
+                            cloud: '#4f46e5'
+                        };
+                        return colors[node.type] || '#999';
                     }}
                     style={{ background: '#f3f4f6', border: '2px solid black' }}
                 />

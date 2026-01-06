@@ -139,9 +139,15 @@ const useSimulationStore = create((set, get) => ({
 
         const newCompletedCount = metrics.completedProcesses + completedInThisTick.length;
 
+        // BUG FIX: Calculate averages using ALL processes (completed + running), not just completed
+        // This matches textbook formulas and prevents artificially low wait times
+        const totalProcesses = scheduler.readyQueue.length + newCompletedCount + cpus.filter(c => !c.isIdle()).length;
+
         // Calculate averages (avoid division by zero)
-        const newAvgWait = newCompletedCount > 0 ? Math.round(newWaitTimeTotal / newCompletedCount) : 0;
-        const newAvgTurnaround = newCompletedCount > 0 ? Math.round(newTurnaroundTotal / newCompletedCount) : 0;
+        // OLD (WRONG): avgWait = totalWaitTime / completedProcesses
+        // NEW (CORRECT): avgWait = totalWaitTime / totalProcesses
+        const newAvgWait = totalProcesses > 0 ? Math.round(newWaitTimeTotal / totalProcesses) : 0;
+        const newAvgTurnaround = totalProcesses > 0 ? Math.round(newTurnaroundTotal / totalProcesses) : 0;
 
         // Record History
         const newHistoryLogs = activeCpus.map(cpu => ({

@@ -79,7 +79,9 @@ function CanvasContent() {
                 data: { label: `${type}`, id: newNodeId },
             };
 
-            setNodes((nds) => nds.concat(newNode));
+            // BUG FIX: Use spread operator instead of concat to ensure nodes persist
+            // concat was causing existing nodes to disappear
+            setNodes((nds) => [...nds, newNode]);
         },
         [screenToFlowPosition, setNodes, registerNode],
     );

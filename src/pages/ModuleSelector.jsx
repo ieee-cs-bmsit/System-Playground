@@ -5,16 +5,26 @@ const modules = [
     { id: 'os-scheduler', name: 'OS Scheduler', icon: Cpu, desc: 'Visualize CPU Scheduling Algorithms (RR, FCFS)', active: true, color: 'bg-comic-blue' },
     { id: 'pc-architecture', name: 'PC Architecture', icon: Monitor, desc: 'Build Computer Systems from Scratch', active: true, color: 'bg-purple-500' },
     { id: 'ram', name: 'RAM Simulator', icon: CircuitBoard, desc: 'Paging, Virtual Memory & TLB', active: true, color: 'bg-green-500' },
+    { id: 'iot', name: 'IoT Network', icon: Wifi, desc: 'Sensor Networks & MQTT Protocol', active: true, color: 'bg-pink-500' },
     { id: 'caching', name: 'Caching System', icon: HardDrive, desc: 'L1/L2 Cache Hits & Misses', active: false, color: 'bg-comic-yellow' },
-    { id: 'iot', name: 'IoT Network', icon: Wifi, desc: 'Sensor Networks & Protocols', active: false, color: 'bg-comic-pink' },
 ];
 
-export default function ModuleSelector({ onSelect }) {
+export default function ModuleSelector({ onSelect, onBack }) {
     return (
         <div className="min-h-screen bg-comic-cream font-comic p-8 relative overflow-hidden">
             <div className="absolute inset-0 bg-comic-stripes opacity-5 pointer-events-none"></div>
 
             <div className="container mx-auto max-w-6xl relative z-10">
+                {/* Back Button */}
+                {onBack && (
+                    <button
+                        onClick={onBack}
+                        className="mb-6 bg-white px-6 py-3 border-4 border-black shadow-comic hover:shadow-none hover:translate-y-1 transition-all font-comic font-bold text-xl transform -rotate-1"
+                    >
+                        ← BACK TO HOME
+                    </button>
+                )}
+
                 <h1 className="text-6xl text-center mb-16 text-black drop-shadow-[4px_4px_0_#fff] text-stroke-white">
                     Select Your Lab
                 </h1>

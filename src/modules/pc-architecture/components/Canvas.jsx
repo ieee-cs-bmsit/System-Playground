@@ -60,7 +60,9 @@ function CanvasInner() {
             data: { label, clockSpeed: 3.0, size: 8192, cores: 1 }
         };
 
-        setNodes((nds) => nds.concat(newNode));
+
+        // BUG FIX: Use spread operator instead of concat
+        setNodes((nds) => [...nds, newNode]);
 
         // Update store
         useArchitectureStore.getState().updateFromNode(newNode.id, type, newNode.data);
