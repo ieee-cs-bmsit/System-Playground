@@ -3,7 +3,19 @@ import { Play, Pause, RotateCcw, FastForward, StepForward } from 'lucide-react';
 import useSimulationStore from '../store/simulationStore';
 
 export default function ControlPanel() {
-    const { isPlaying, togglePlay, reset, currentTime, tick, speed, setSpeed, step } = useSimulationStore();
+    const {
+        isPlaying,
+        togglePlay,
+        reset,
+        currentTime,
+        tick,
+        speed,
+        setSpeed,
+        step,
+        scheduler,
+        updateAlgorithm,
+        updateQuantum
+    } = useSimulationStore();
 
     // Game Loop
     useEffect(() => {
@@ -17,7 +29,7 @@ export default function ControlPanel() {
     }, [isPlaying, speed, tick]);
 
     return (
-        <div className="bg-white border-4 border-black shadow-comic flex items-center gap-4 p-4">
+        <div className="bg-white border-4 border-black shadow-comic flex items-center gap-4 p-4 flex-wrap">
             {/* Time Display */}
             <div className="bg-comic-dark text-white px-4 py-2 font-mono font-bold border-2 border-black min-w-[100px] text-center">
                 T: {currentTime}
@@ -61,6 +73,38 @@ export default function ControlPanel() {
                     className="w-24 accent-comic-blue h-4 bg-gray-200 rounded-lg appearance-none cursor-pointer border-2 border-black"
                 />
             </div>
+
+            {/* Algorithm Selector */}
+            <div className="flex items-center gap-2 border-l-2 border-black pl-4">
+                <label className="font-bold text-sm">Algorithm:</label>
+                <select
+                    value={scheduler?.algorithm || 'RR'}
+                    onChange={(e) => updateAlgorithm(e.target.value)}
+                    className="px-3 py-1 border-3 border-black bg-white font-comic font-bold text-sm shadow-comic-sm hover:shadow-comic transition-all cursor-pointer"
+                    disabled={isPlaying}
+                >
+                    <option value="RR">Round Robin</option>
+                    <option value="FCFS">First Come First Served</option>
+                    <option value="SJF">Shortest Job First</option>
+                    <option value="Priority">Priority</option>
+                </select>
+            </div>
+
+            {/* Quantum Control (only for RR) */}
+            {scheduler?.algorithm === 'RR' && (
+                <div className="flex items-center gap-2">
+                    <label className="font-bold text-sm">Quantum:</label>
+                    <input
+                        type="number"
+                        min="1"
+                        max="10"
+                        value={scheduler.quantum}
+                        onChange={(e) => updateQuantum(parseInt(e.target.value))}
+                        className="w-16 px-2 py-1 border-3 border-black font-mono font-bold text-center"
+                        disabled={isPlaying}
+                    />
+                </div>
+            )}
         </div>
     );
 }

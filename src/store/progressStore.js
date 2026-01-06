@@ -43,7 +43,7 @@ const useProgressStore = create(
              * Complete a level with results
              */
             completeLevel: (levelId, result) => {
-                const existingProgress = get().levelProgress[levelId] || {};
+                const existingProgress = get().levelProgress?.[levelId] || {};
                 const newStars = Math.max(existingProgress.stars || 0, result.stars);
                 const isFirstCompletion = !existingProgress.completed;
                 const isImprovement = newStars > (existingProgress.stars || 0);
@@ -75,13 +75,16 @@ const useProgressStore = create(
                         : state.totalLevelsCompleted
                 }));
 
-                // Unlock next level
+                // Unlock next level if specified
                 if (result.unlocks) {
                     get().unlockLevel(result.unlocks);
+                    console.log(`🔓 Unlocked next level: ${result.unlocks}`);
                 }
 
                 // Check for achievements
                 get().checkAchievements(levelId, result);
+
+                console.log(`✅ Level ${levelId} completed with ${newStars} stars`);
             },
 
             /**
