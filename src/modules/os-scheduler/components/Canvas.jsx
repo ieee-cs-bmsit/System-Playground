@@ -10,8 +10,10 @@ import ReactFlow, {
     ReactFlowProvider
 } from 'reactflow';
 import 'reactflow/dist/style.css';
-import { CPUNode, SchedulerNode, ProcessNode, GeneratorNode } from './nodes/OSNodes';
-import useSimulationStore from '../../store/simulationStore';
+import { CPUNode, SchedulerNode, ProcessNode, GeneratorNode } from '../nodes/OSNodes';
+import { MemoryResourceNode, MutexResourceNode, IODeviceNode } from '../nodes/ResourceNodes';
+import useSimulationStore from '../store/simulationStore';
+import ValidationPanel from './ValidationPanel';
 
 const initialNodes = [];
 const initialEdges = [];
@@ -32,9 +34,17 @@ function CanvasContent() {
         scheduler: SchedulerNode,
         process: ProcessNode,
         generator: GeneratorNode,
+        memory: MemoryResourceNode,
+        mutex: MutexResourceNode,
+        iodevice: IODeviceNode
     }), []);
 
-    const onConnect = useCallback((params) => setEdges((eds) => addEdge(params, eds)), [setEdges]);
+    const onConnect = useCallback((params) => setEdges((eds) => addEdge({
+        ...params,
+        animated: true,
+        style: { stroke: '#000', strokeWidth: 3 },
+        type: 'default' // Using default bezier curves for thread-like appearance
+    }, eds)), [setEdges]);
 
     const onDragOver = useCallback((event) => {
         event.preventDefault();
@@ -101,6 +111,9 @@ function CanvasContent() {
                     maskColor="rgba(240, 240, 240, 0.6)"
                 />
             </ReactFlow>
+
+            {/* Validation Panel - Inside ReactFlow context */}
+            <ValidationPanel />
 
             {/* Decorative Label */}
             <div className="absolute top-0 left-0 bg-comic-yellow border-b-4 border-r-4 border-black px-4 py-1 z-10">
