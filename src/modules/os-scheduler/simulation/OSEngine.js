@@ -29,6 +29,29 @@ export class Process {
 
         return colors[Math.floor(Math.random() * colors.length)];
     }
+
+    // Resource management methods
+    requestResource(resourceId) {
+        if (!this.resourcesWaiting.includes(resourceId)) {
+            this.resourcesWaiting.push(resourceId);
+        }
+    }
+
+    holdResource(resourceId) {
+        if (!this.resourcesHeld.includes(resourceId)) {
+            this.resourcesHeld.push(resourceId);
+        }
+        // Remove from waiting list
+        this.resourcesWaiting = this.resourcesWaiting.filter(r => r !== resourceId);
+    }
+
+    releaseResource(resourceId) {
+        this.resourcesHeld = this.resourcesHeld.filter(r => r !== resourceId);
+    }
+
+    isWaitingForResource() {
+        return this.resourcesWaiting.length > 0;
+    }
 }
 
 export class CPU {

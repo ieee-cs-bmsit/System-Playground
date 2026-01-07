@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 💬 Discussions
+    url: https://github.com/ieee-cs-bmsit/visual-system-builder/discussions
+    about: Ask questions, share ideas, and discuss with the community
+  - name: 📚 Documentation
+    url: https://github.com/ieee-cs-bmsit/visual-system-builder#readme
+    about: Read the documentation for guides and tutorials

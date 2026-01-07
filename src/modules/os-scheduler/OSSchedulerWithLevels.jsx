@@ -79,22 +79,37 @@ export default function OSSchedulerWithLevels() {
     const validateCurrentLevel = () => {
         if (!currentLevel) return;
 
-        // Gather simulation state
+        // Get actual simulation state
+        const simState = useSimulationStore.getState();
+
+        // Gather simulation state with REAL data
         const simulationState = {
-            processCount: metrics.completedProcesses,
-            processes: [], // TODO: Get from simulation store
-            scheduler: useSimulationStore.getState().scheduler?.algorithm || 'RR',
+            // FIX: Use completed processes count, not current active processes
+            processCount: metrics.completedProcesses || 0,
+            processes: simState.processes || [],
+            scheduler: simState.scheduler?.algorithm || 'RR',
             metrics: {
-                avgWaitTime: metrics.avgWaitTime,
-                avgTurnaroundTime: metrics.avgTurnaroundTime,
-                cpuUtilization: metrics.cpuUtilization,
-                throughput: parseFloat(metrics.throughput),
-                contextSwitches: metrics.contextSwitches || 0
+                avgWaitTime: metrics.avgWaitTime || 0,
+                avgTurnaroundTime: metrics.avgTurnaroundTime || 0,
+                cpuUtilization: metrics.cpuUtilization || 0,
+                throughput: parseFloat(metrics.throughput) || 0,
+                contextSwitches: metrics.contextSwitches || 0,
+                completedProcesses: metrics.completedProcesses || 0,
+                deadlockCount: metrics.deadlockCount || 0
             },
-            components: [], // TODO: Get from canvas nodes
-            deadlockDetected: false, // TODO: From simulation
-            deadlockCount: 0
+            // FIX: Gather components from store
+            components: [
+                ...(simState.cpus?.length > 0 ? [{ type: 'cpu' }] : []),
+                { type: 'scheduler' },
+                ...(simState.resourceManager?.resources?.size > 0
+                    ? Array.from(simState.resourceManager.resources.keys()).map(id => ({ type: 'mutex', id }))
+                    : [])
+            ],
+            deadlockDetected: metrics.deadlockDetected || false,
+            deadlockCount: metrics.deadlockCount || 0
         };
+
+        console.log('🔍 Validation State:', simulationState);
 
         const result = validator.validate(currentLevel, simulationState);
         setValidationResult(result);
@@ -116,14 +131,10 @@ export default function OSSchedulerWithLevels() {
     const handleValidateNow = () => {
         const result = validateCurrentLevel();
 
-        // Show feedback alert
+        // Auto-scroll to show validation result
         if (result) {
-            const message = result.passed
-                ? `${result.feedback.title}\n${result.feedback.message}`
-                : `${result.feedback.title}\n${result.violations.join('\n')}`;
-
-            // Could replace with a nicer toast notification
-            alert(message);
+            console.log('🎯 Validation Result:', result);
+            // Validation result panel will show automatically via validationResult state
         }
     };
 

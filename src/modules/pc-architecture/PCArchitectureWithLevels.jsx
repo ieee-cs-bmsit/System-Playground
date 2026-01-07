@@ -6,6 +6,7 @@ import PCSidebar from './components/Sidebar';
 import PCCanvas from './components/Canvas';
 import PCMetricsPanel from './components/MetricsPanel';
 import PCControlPanel from './components/ControlPanel';
+import SimpleCPUDemo from './components/SimpleCPUDemo';
 
 // Import level system components
 import LevelSelect from '../../components/LevelSelect';
@@ -135,18 +136,19 @@ export default function PCArchitectureWithLevels() {
                 )}
             </div>
 
-            {/* Main Content - Original PC Architecture Layout */}
+            {/* Main Content */}
             <div className="flex-1 flex overflow-hidden relative">
-                {/* Sidebar */}
-                <div className="z-20 h-full relative">
-                    <PCSidebar />
-                </div>
-
                 {/* Main Area */}
                 <div className="flex-1 flex flex-col relative">
-                    {/* Canvas */}
-                    <div className="flex-1 relative">
-                        <PCCanvas />
+                    {/* Canvas - Use simple demo for now */}
+                    <div className="flex-1 relative bg-comic-cream">
+                        {currentLevel ? (
+                            // Use SimpleCPUDemo import for level mode
+                            <SimpleCPUDemo />
+                        ) : (
+                            // Use React Flow for sandbox
+                            <PCCanvas />
+                        )}
 
                         {/* Level Objective Overlay */}
                         {currentLevel && (
@@ -157,14 +159,9 @@ export default function PCArchitectureWithLevels() {
                         )}
 
                         {/* Metrics Panel Overlay */}
-                        <div className="absolute top-32 right-4 z-40">
+                        <div className="absolute top-4 right-4 z-40">
                             <PCMetricsPanel />
                         </div>
-                    </div>
-
-                    {/* Bottom Controls */}
-                    <div className="absolute bottom-8 left-[40%] transform -translate-x-1/2 z-50">
-                        <PCControlPanel />
                     </div>
                 </div>
             </div>

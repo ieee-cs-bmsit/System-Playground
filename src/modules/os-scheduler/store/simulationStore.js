@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { Process, CPU, Scheduler } from '../simulation/OSEngine';
+import { ResourceManager } from '../resources/ResourceManager';
 
 /**
  * Global Simulation Store (OS Module)
@@ -15,6 +16,7 @@ const useSimulationStore = create((set, get) => ({
     scheduler: new Scheduler('RR', 3),
     processes: [],
     generators: [],
+    resourceManager: new ResourceManager(), // ADD: Resource manager for deadlock detection
     history: [],
 
     // Controls
@@ -70,6 +72,12 @@ const useSimulationStore = create((set, get) => ({
                 state.scheduler.addProcess(newProc);
                 return { processes: [...state.processes, newProc] };
             }
+            // ADD: Register MUTEX resources
+            if (type === 'mutex') {
+                state.resourceManager.registerResource(id, 'mutex', 1);
+                console.log(`🔒 Registered MUTEX: ${id}`);
+                return { resourceManager: state.resourceManager };
+            }
             return {};
         })
     },
@@ -82,7 +90,9 @@ const useSimulationStore = create((set, get) => ({
         avgWaitTime: 0,
         avgTurnaroundTime: 0,
         totalWaitTime: 0,
-        totalTurnaroundTime: 0
+        totalTurnaroundTime: 0,
+        deadlockCount: 0, // ADD: Deadlock counter
+        deadlockDetected: false // ADD: Current deadlock status
     },
 
     // The "Tick" function
@@ -124,6 +134,54 @@ const useSimulationStore = create((set, get) => ({
         });
 
 
+        // 1.5 Resource Allocation Logic (NEW: for deadlock detection)
+        const resourceManager = get().resourceManager;
+        const allProcesses = [...scheduler.readyQueue, ...cpus.map(c => c.currentProcess).filter(Boolean)];
+
+        // Handle resource requests from processes
+        allProcesses.forEach(process => {
+            // For demonstration: processes randomly request mutexes based on their ID
+            // In a full implementation, this would come from process configuration
+            if (process && process.resourcesHeld.length === 0 && process.resourcesWaiting.length === 0) {
+                // Assign mutex requirements based on process ID pattern
+                const mutexes = Array.from(resourceManager.resources.keys());
+                if (mutexes.length >= 2) {
+                    const isOddProcess = parseInt(process.id.replace(/\D/g, '')) % 2 === 0;
+                    const [mutex1, mutex2] = isOddProcess ? [mutexes[0], mutexes[1]] : [mutexes[1], mutexes[0]];
+
+                    // Try to acquire first mutex
+                    const resource1 = resourceManager.getResource(mutex1);
+                    const request1 = resource1.request(process, 1);
+
+                    if (request1.success) {
+                        process.holdResource(mutex1);
+                    } else {
+                        process.requestResource(mutex1);
+                        process.state = 'BLOCKED';
+                    }
+                }
+            }
+            // If holding one resource, try to get the second
+            else if (process && process.resourcesHeld.length === 1 && process.resourcesWaiting.length === 0) {
+                const mutexes = Array.from(resourceManager.resources.keys());
+                const heldMutex = process.resourcesHeld[0];
+                const neededMutex = mutexes.find(m => m !== heldMutex);
+
+                if (neededMutex) {
+                    const resource2 = resourceManager.getResource(neededMutex);
+                    const request2 = resource2.request(process, 1);
+
+                    if (request2.success) {
+                        process.holdResource(neededMutex);
+                    } else {
+                        process.requestResource(neededMutex);
+                        process.state = 'BLOCKED'; // DEADLOCK HAPPENS HERE
+                    }
+                }
+            }
+        });
+
+
         // 2. Metrics Calculation
         const activeCpus = cpus.filter(c => !c.isIdle());
         const utilization = cpus.length > 0 ? (activeCpus.length / cpus.length) * 100 : 0;
@@ -157,6 +215,11 @@ const useSimulationStore = create((set, get) => ({
             color: cpu.currentProcess.color
         }));
 
+        // ADD: Check for deadlocks (reuse resourceManager from line 138)
+        // FIX: Use allProcesses that includes processes holding/waiting for resources
+        const deadlockDetected = resourceManager.detectDeadlock(allProcesses);
+        const newDeadlockCount = deadlockDetected ? (metrics.deadlockCount || 0) + 1 : (metrics.deadlockCount || 0);
+
         set(state => ({
             currentTime: nextTime,
             history: [...state.history, ...newHistoryLogs].slice(-100),
@@ -167,7 +230,9 @@ const useSimulationStore = create((set, get) => ({
                 avgWaitTime: newAvgWait,
                 avgTurnaroundTime: newAvgTurnaround,
                 totalWaitTime: newWaitTimeTotal,
-                totalTurnaroundTime: newTurnaroundTotal
+                totalTurnaroundTime: newTurnaroundTotal,
+                deadlockCount: newDeadlockCount, // ADD: Update deadlock count
+                deadlockDetected // ADD: Current status
             }
         }));
     }
