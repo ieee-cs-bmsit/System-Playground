@@ -1,7 +1,7 @@
 {
     "name": "visual-system-builder",
     "private": true,
-    "version": "0.0.0",
+    "version": "0.1.0",
     "type": "module",
     "scripts": {
         "dev": "vite",
@@ -10,9 +10,14 @@
         "preview": "vite preview",
         "test": "jest",
         "test:watch": "jest --watch",
-        "test:coverage": "jest --coverage"
+        "test:coverage": "jest --coverage",
+        "test:e2e": "playwright test",
+        "tauri:dev": "tauri dev",
+        "tauri:build": "tauri build",
+        "tauri:android": "tauri android build"
     },
     "dependencies": {
+        "@tauri-apps/api": "^1.5.3",
         "lucide-react": "^0.344.0",
         "react": "^18.3.1",
         "react-dom": "^18.3.1",
@@ -20,8 +25,11 @@
         "zustand": "^4.5.7"
     },
     "devDependencies": {
+        "@babel/preset-env": "^7.23.9",
         "@babel/preset-react": "^7.25.9",
         "@eslint/js": "^9.13.0",
+        "@playwright/test": "^1.41.2",
+        "@tauri-apps/cli": "^1.5.9",
         "@testing-library/jest-dom": "^6.6.3",
         "@testing-library/react": "^16.1.0",
         "@testing-library/user-event": "^14.5.2",
