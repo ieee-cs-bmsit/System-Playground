@@ -1,5 +1,5 @@
 use wasm_bindgen::prelude::*;
-use serde::{Serialize, Deserialize};
+// use serde::{Serialize, Deserialize};
 
 /// RISC-V CPU Emulator
 /// Implements RV32I base instruction set
