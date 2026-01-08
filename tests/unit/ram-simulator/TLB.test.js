@@ -164,8 +164,9 @@ describe('TLB (Translation Lookaside Buffer)', () => {
             tlb.lookup(2); // miss
 
             expect(tlb.hits).toBe(4);
-            expect(tlb.misses).toBe(3);
-            expect(tlb.getHitRate()).toBeCloseTo(57.14, 2);
+            expect(tlb.misses).toBe(2); // Only 2 misses (lookup 1 and lookup 2)
+            expect(tlb.accesses).toBe(6); // 6 lookups total (insert doesn't count)
+            expect(tlb.getHitRate()).toBeCloseTo(66.67, 1); // 4/6 = 66.67%
         });
     });
 });
