@@ -1,6 +1,5 @@
 /// Memory module (placeholder for now)
 /// Will be expanded with cache hierarchy later
-
 pub struct Memory {
     data: Vec<u8>,
 }

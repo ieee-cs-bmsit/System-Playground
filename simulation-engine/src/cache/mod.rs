@@ -1,6 +1,5 @@
 /// Cache module (placeholder for now)
 /// Will implement real LRU cache hierarchy in Phase 2
-
 pub struct Cache {
     // Placeholder
 }
