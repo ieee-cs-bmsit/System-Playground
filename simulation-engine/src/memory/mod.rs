@@ -10,7 +10,7 @@ impl Memory {
             data: vec![0; size],
         }
     }
-    
+
     pub fn read_u64(&self, addr: u64) -> u64 {
         let addr = addr as usize;
         if addr + 8 <= self.data.len() {
@@ -28,7 +28,7 @@ impl Memory {
             0
         }
     }
-    
+
     pub fn write_u64(&mut self, addr: u64, value: u64) {
         let addr = addr as usize;
         if addr + 8 <= self.data.len() {

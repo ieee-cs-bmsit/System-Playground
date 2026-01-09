@@ -1,14 +1,14 @@
 use wasm_bindgen::prelude::*;
 
 // RISC-V CPU module
+pub mod cache;
 pub mod cpu;
 pub mod memory;
-pub mod cache;
 
 // Re-export main types
+pub use cache::Cache;
 pub use cpu::CPU;
 pub use memory::Memory;
-pub use cache::Cache;
 
 /// Initialize the WASM module
 #[wasm_bindgen(start)]
