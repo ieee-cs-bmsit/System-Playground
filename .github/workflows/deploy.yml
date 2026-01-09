@@ -52,7 +52,7 @@ jobs:
 
       - name: Build WASM
         working-directory: ./simulation-engine
-        run: wasm-pack build --target web --release
+        run: wasm-pack build --target web --release -- --no-default-features
 
       - name: Install dependencies
         run: npm ci
