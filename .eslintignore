@@ -1,0 +1,8 @@
+# ESLint ignore file
+*.json
+dist/
+coverage/
+node_modules/
+simulation-engine/pkg/
+simulation-engine/target/
+.releaserc.json

@@ -31,7 +31,6 @@ const useProgressStore = create(
             totalStars: 0,
             totalLevelsCompleted: 0,
             totalPlaytime: 0, // seconds
-            achievements: [],
 
             // Current session
             currentLevel: null,

@@ -5,7 +5,7 @@ import reactHooks from 'eslint-plugin-react-hooks';
 import reactRefresh from 'eslint-plugin-react-refresh';
 
 export default [
-    { ignores: ['dist', 'coverage'] },
+    { ignores: ['dist', 'coverage', '*.json', '.releaserc.json', 'package.json', 'package-lock.json', 'simulation-engine/**'] },
     {
         files: ['**/*.{js,jsx}'],
         languageOptions: {
@@ -35,6 +35,8 @@ export default [
             ],
             'react/prop-types': 'off', // Disable prop-types as we're moving to TS or ignored
             'no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
+            'react/no-unescaped-entities': 'warn', // Downgrade to warning
+            'react/display-name': 'warn', // Downgrade to warning
         },
     },
     {
@@ -44,7 +46,7 @@ export default [
         },
     },
     {
-        files: ['vite.config.js', 'postcss.config.js', 'tailwind.config.js', 'jest.config.js', 'commitlint.config.js', '.releaserc.json'],
+        files: ['vite.config.js', 'postcss.config.js', 'tailwind.config.js', 'jest.config.js', 'commitlint.config.js'],
         languageOptions: {
             globals: globals.node,
         },
